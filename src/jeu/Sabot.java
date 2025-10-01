@@ -13,6 +13,9 @@ public class Sabot implements Iterable<Carte>{
     public Sabot(Carte[] cartes){
         nbCartes = cartes.length;
         this.cartes = new Carte[nbCartes];
+        for (int i = 0; i < nbCartes; i++) {
+            this.cartes[i] = cartes[i];
+        }
     }
     
     public boolean estVide(){

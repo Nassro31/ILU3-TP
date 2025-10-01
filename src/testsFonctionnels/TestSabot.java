@@ -40,7 +40,7 @@ public class TestSabot {
 
     public static void main(String[] args) {
         TestSabot testPioche = new TestSabot();
-		//testPioche.debut();
+		testPioche.debut();
 		//testPioche.suite();
 		//testPioche.fin();
     }
