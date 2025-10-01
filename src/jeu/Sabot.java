@@ -1,56 +1,83 @@
 package jeu;
+import cartes.*;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import cartes.Carte;
+import java.util.NoSuchElementException;
 
-public class Sabot implements Iterable<Carte> {
+public class Sabot implements Iterable<Carte>{
     private int nbCartes;
     private Carte[] cartes;
+    private int oP = 0;
 
-    public Sabot(Carte[] cartes) {
-        this.cartes = cartes;
-        this.nbCartes = cartes.length;
+    public Sabot(Carte[] cartes){
+        nbCartes = cartes.length;
+        this.cartes = new Carte[nbCartes];
     }
-
-    public boolean estVide() {
+    
+    public boolean estVide(){
         return nbCartes == 0;
     }
-
+    
     public void ajouterCarte(Carte carte) {
-        if (nbCartes >= cartes.length) {
-            throw new IllegalStateException("le sabot est plein");
+        if (nbCartes >= cartes.length){
+            throw new IllegalStateException("Dépassement de capacité");
         }
         cartes[nbCartes] = carte;
         nbCartes++;
+        oP++;
     }
-    public Iterator<Carte> iterator() { return new Iterateur(); }
+    
+    public Carte piocher() {
+        Iterator<Carte> it = this.iterator();
+        if (!it.hasNext()) {
+            throw new IllegalStateException("Sabot vide");
+        }
+        Carte premiereCarte = it.next();
+        it.remove();
+        return premiereCarte;
+    }
 
+    
+    public Iterator<Carte> iterator() {
+        return new SabotIterator();
+    }
+    
+    private class SabotIterator implements Iterator<Carte> {
+        private int indiceIter = 0;
+        private int derElt = -1;
+        private int opRef = oP;
 
-    private class  Iterateur implements iterator<cartes>{{
-            private int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return index < nbCartes;
+        @Override
+        public boolean hasNext() {
+            return indiceIter < nbCartes;
+        }
+        
+        @Override
+        public Carte next() {
+            if (oP != opRef)
+                throw new ConcurrentModificationException();
+            if (indiceIter >= nbCartes)
+                throw new NoSuchElementException();
+            derElt = indiceIter;
+            return cartes[indiceIter++];
+        }
+        
+        @Override
+        public void remove() {
+            if (derElt < 0)
+                throw new IllegalStateException();
+            if (oP != opRef)
+                throw new ConcurrentModificationException();
+            for (int i = derElt; i < nbCartes - 1; i++) {
+                cartes[i] = cartes[i+1];
             }
-
-            @Override
-            public Carte next() {
-                if (!hasNext()) {
-                    throw new java.util.NoSuchElementException();
-                }
-                return cartes[index++];
-            }
-
-            @Override
-            public void remove() {
-
-                if (index == 0 || cartes[index - 1] == null) {
-                    throw new IllegalStateException("Aucune carte à supprimer");
-                }
-                System.arraycopy(cartes, index, cartes, index - 1, nbCartes - index);
-                cartes[--nbCartes] = null;
-            }
-        };
+            cartes[nbCartes-1] = null;
+            nbCartes--;
+            oP++;
+            opRef++;
+            indiceIter = derElt;
+            derElt = -1;
+        }
     }
 }
