@@ -6,11 +6,11 @@ public enum Type {
     CREVAISON("Crevaison", "Roue de secours", "Increvable"),
     ACCIDENT("Accident", "Réparations", "As du volant");
     
-    final String attaque;
-    final String parade;
-    final String botte;
+    private final String attaque;
+    private final String parade;
+    private final String botte;
     
-    Type(String attaque, String parade, String botte) {
+    private Type(String attaque, String parade, String botte) {
         this.attaque = attaque;
         this.parade = parade;
         this.botte = botte;

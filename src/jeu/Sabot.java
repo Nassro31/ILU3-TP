@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 public class Sabot implements Iterable<Carte>{
     private int nbCartes;
     private Carte[] cartes;
-    private int oP = 0;
+    private int nbOperation = 0;
 
     public Sabot(Carte[] cartes){
         nbCartes = cartes.length;
@@ -28,7 +28,7 @@ public class Sabot implements Iterable<Carte>{
         }
         cartes[nbCartes] = carte;
         nbCartes++;
-        oP++;
+        nbOperation++;
     }
     
     public Carte piocher() {
@@ -49,7 +49,7 @@ public class Sabot implements Iterable<Carte>{
     private class SabotIterator implements Iterator<Carte> {
         private int indiceIter = 0;
         private int derElt = -1;
-        private int opRef = oP;
+        private int opRef = nbOperation;
 
         @Override
         public boolean hasNext() {
@@ -58,26 +58,29 @@ public class Sabot implements Iterable<Carte>{
         
         @Override
         public Carte next() {
-            if (oP != opRef)
-                throw new ConcurrentModificationException();
+            verifierConcurrence();
             if (indiceIter >= nbCartes)
                 throw new NoSuchElementException();
             derElt = indiceIter;
             return cartes[indiceIter++];
         }
+
+		private void verifierConcurrence() {
+			if (nbOperation != opRef)
+                throw new ConcurrentModificationException();
+		}
         
         @Override
         public void remove() {
             if (derElt < 0)
                 throw new IllegalStateException();
-            if (oP != opRef)
-                throw new ConcurrentModificationException();
+            verifierConcurrence();
             for (int i = derElt; i < nbCartes - 1; i++) {
                 cartes[i] = cartes[i+1];
             }
             cartes[nbCartes-1] = null;
             nbCartes--;
-            oP++;
+            nbOperation++;
             opRef++;
             indiceIter = derElt;
             derElt = -1;
