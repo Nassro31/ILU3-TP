@@ -1,89 +1,99 @@
 package jeu;
-import cartes.*;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import cartes.Carte;
+
 public class Sabot implements Iterable<Carte>{
-    private int nbCartes;
-    private Carte[] cartes;
-    private int nbOperation = 0;
+	private int nbCartes;
+	private Carte[] cartes;
+	private int nombreOperations =  0;
+	
 
-    public Sabot(Carte[] cartes){
-        nbCartes = cartes.length;
-        this.cartes = new Carte[nbCartes];
-        for (int i = 0; i < nbCartes; i++) {
-            this.cartes[i] = cartes[i];
-        }
-    }
-    
-    public boolean estVide(){
-        return nbCartes == 0;
-    }
-    
-    public void ajouterCarte(Carte carte) {
-        if (nbCartes >= cartes.length){
-            throw new IllegalStateException("Dépassement de capacité");
-        }
-        cartes[nbCartes] = carte;
-        nbCartes++;
-        nbOperation++;
-    }
-    
-    public Carte piocher() {
-        Iterator<Carte> it = this.iterator();
-        if (!it.hasNext()) {
-            throw new IllegalStateException("Sabot vide");
-        }
-        Carte premiereCarte = it.next();
-        it.remove();
-        return premiereCarte;
-    }
-
-    
-    public Iterator<Carte> iterator() {
-        return new SabotIterator();
-    }
-    
-    private class SabotIterator implements Iterator<Carte> {
-        private int indiceIter = 0;
-        private int derElt = -1;
-        private int opRef = nbOperation;
-
-        @Override
-        public boolean hasNext() {
-            return indiceIter < nbCartes;
-        }
-        
-        @Override
-        public Carte next() {
-            verifierConcurrence();
-            if (indiceIter >= nbCartes)
-                throw new NoSuchElementException();
-            derElt = indiceIter;
-            return cartes[indiceIter++];
-        }
-
-		private void verifierConcurrence() {
-			if (nbOperation != opRef)
-                throw new ConcurrentModificationException();
+	public Sabot(Carte[] cartes) {
+		this.nbCartes = cartes.length;
+		this.cartes = new Carte[nbCartes];
+		System.arraycopy(cartes, 0, this.cartes, 0, nbCartes);
+	}
+	
+	public boolean estVide() {
+		return nbCartes == 0;
+	}
+	
+	public void ajouterCarte(Carte carte) {
+		if (nbCartes >= cartes.length) {
+			throw new IllegalStateException("Sabot plein : impossible d'ajouter une carte");
 		}
-        
-        @Override
-        public void remove() {
-            if (derElt < 0)
-                throw new IllegalStateException();
-            verifierConcurrence();
-            for (int i = derElt; i < nbCartes - 1; i++) {
-                cartes[i] = cartes[i+1];
-            }
-            cartes[nbCartes-1] = null;
-            nbCartes--;
-            nbOperation++;
-            opRef++;
-            indiceIter = derElt;
-            derElt = -1;
+		cartes[nbCartes] = carte;
+		nbCartes ++;
+		nombreOperations++;
+	}
+	
+
+	public Carte piocher(){
+		if (estVide()) {
+            throw new NoSuchElementException("Sabot vide : impossible de piocher");
         }
+        Iterator<Carte> it = iterator() ;
+        Carte carte = it.next();
+        it.remove();
+        return carte;
     }
+	
+	@Override
+	public Iterator<Carte> iterator() {
+		return new SabotIterator();
+	}
+	
+	// class iterable
+	
+	private class SabotIterator implements Iterator<Carte>{
+		private int indiceIterateur = 0;
+		private boolean nextEffectue = false;
+		private int nombreOperationReference = nombreOperations;
+		
+		@Override
+		public boolean hasNext() {
+			return indiceIterateur < nbCartes;
+		}
+	
+		@Override
+		public Carte next() {
+			verificationConcurrence();
+			if(hasNext()) {
+				Carte carte = cartes[indiceIterateur];
+				indiceIterateur++;
+				nextEffectue = true ;
+				return carte;
+			}else {
+				throw new NoSuchElementException();
+			}
+		}
+	
+		@Override
+		public void remove() {
+			verificationConcurrence();
+			if(nbCartes < 1 || !nextEffectue) {
+				throw new IllegalStateException();
+			}
+			for(int i= indiceIterateur-1; i<nbCartes-1; i++) {
+				cartes[i]=cartes[i+1];
+			}
+			nextEffectue = false;
+			indiceIterateur--;
+			nbCartes--;
+			nombreOperations++;
+			nombreOperationReference++;
+		}
+		
+		private void verificationConcurrence() {
+			if(nombreOperations != nombreOperationReference) {
+				throw new ConcurrentModificationException();
+			}
+		}
+	}
+
+	
 }
