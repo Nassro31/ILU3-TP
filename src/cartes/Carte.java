@@ -7,4 +7,6 @@ public abstract class Carte {
 	    return (obj != null && obj.getClass() == getClass());
 	}
 
+
+
 }
