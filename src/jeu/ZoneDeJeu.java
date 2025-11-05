@@ -1,6 +1,7 @@
 package jeu;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import cartes.Attaque;
@@ -13,14 +14,12 @@ import cartes.Limite;
 import cartes.Parade;
 
 public class ZoneDeJeu {
-	private List<Limite> limites = new ArrayList<>();
-	private List<Bataille> bataille = new ArrayList<>();
-	private List<Borne> borne = new ArrayList<>();
+	private List<Limite> limites = new LinkedList<>();
+	private List<Bataille> batailles = new LinkedList<>();
+	private List<Borne> bornes = new ArrayList<>();
 
 	public int donnerLimitationVitesse() {
-		if (limites.isEmpty() || limites.get(0).getClass() == FinLimite.class) { // verifier avec le prof si c le 0 le
-																					// sommet ou si c le dernier
-																					// bataille.size() - 1
+		if (limites.isEmpty() || limites.get(0).getClass() == FinLimite.class) { 
 			return 200;
 		}
 		return 50;
@@ -28,33 +27,33 @@ public class ZoneDeJeu {
 
 	public int donnerKmParcourus() {
 		int somme = 0;
-		for (Borne borne : borne) {
+		for (Borne borne : bornes) {
 			somme += borne.getKm();
 		}
 		return somme;
 	}
 
 	public void deposer(Carte c) {
-		if (c instanceof Borne) {
-			borne.add(0, (Borne) c);
+		if (c instanceof Borne borne) {
+			bornes.add(borne);
 		}
-		if (c instanceof Limite) {
-			limites.add(0, (Limite) c);
+		if (c instanceof Limite limite) {
+			limites.add(0, limite);
 		}
-		if (c instanceof Bataille) {
-			bataille.add(0, (Bataille) c);
+		if (c instanceof Bataille bataille) {
+			batailles.add(0, bataille);
 		}
 	}
 
 	public boolean peutAvancer() {
-		return !bataille.isEmpty() && bataille.get(0) == Cartes.FEU_VERT;	
+		return !batailles.isEmpty() && batailles.get(0) == Cartes.FEU_VERT;	
 		}
 
-	public boolean estDepotFeuVertAutorise() {
-		if (bataille.isEmpty()) {
+	private boolean estDepotFeuVertAutorise() {
+		if (batailles.isEmpty()) {
 			return true;
 		}
-		Bataille sommet = bataille.get(0);
+		Bataille sommet = batailles.get(0);
 
 		if (sommet == Cartes.FEU_ROUGE) {
 			return true;
@@ -62,11 +61,11 @@ public class ZoneDeJeu {
 		return sommet instanceof Parade && sommet != Cartes.FEU_VERT;
 	}
 
-	public boolean estDepotBorneAutorise(Borne borne) {
+	private boolean estDepotBorneAutorise(Borne borne) {
 		return peutAvancer() && borne.getKm() <= donnerLimitationVitesse() && (donnerKmParcourus() + borne.getKm()) <= 1000;
 	}
 
-	public boolean estDepotLimiteAutorise(Limite limite) {
+	private boolean estDepotLimiteAutorise(Limite limite) {
 
 		if (limite instanceof DebuteLimite) {
 			if (limites.isEmpty()) {
@@ -85,15 +84,15 @@ public class ZoneDeJeu {
 		return false;
 	}
 	
-	public boolean estDepotBatailleAutorise(Bataille bataille) {
+	private boolean estDepotBatailleAutorise(Bataille bataille) {
 	    
 	    if (bataille instanceof Attaque) {
-	        
-	        if (this.bataille.isEmpty()) {
+	        //TODO fairea evc meth peutAvancer
+	        if (this.batailles.isEmpty()) {
 	            return true; //verifier avec la prof pk ca serait false voir test 1 
 	        }
 	        
-	        Bataille sommet = this.bataille.get(0);
+	        Bataille sommet = this.batailles.get(0);
 	        return sommet instanceof Parade;
 	    }
 	    
@@ -102,10 +101,10 @@ public class ZoneDeJeu {
 	            return estDepotFeuVertAutorise();
 	        } 
 	        else {
-	            if (this.bataille.isEmpty()) {
+	            if (this.batailles.isEmpty()) {
 	                return false; 
 	            }
-	            Bataille sommet = this.bataille.get(0);
+	            Bataille sommet = this.batailles.get(0);
 	            return sommet instanceof Attaque && bataille.getType() == sommet.getType();
 	        }
 	    }
@@ -113,14 +112,14 @@ public class ZoneDeJeu {
 	}
 	
 	public boolean estDepotAutorise(Carte carte) {
-        if (carte instanceof Borne) {
-            return estDepotBorneAutorise((Borne) carte);
+        if (carte instanceof Borne borne) {
+            return estDepotBorneAutorise(borne);
         }
-        if (carte instanceof Limite) {
-            return estDepotLimiteAutorise((Limite) carte);
+        if (carte instanceof Limite limite) {
+            return estDepotLimiteAutorise(limite);
         }
-        if (carte instanceof Bataille) {
-            return estDepotBatailleAutorise((Bataille) carte);
+        if (carte instanceof Bataille bataille) {
+            return estDepotBatailleAutorise(bataille);
         }
         return false; 
     }

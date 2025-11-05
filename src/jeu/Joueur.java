@@ -1,6 +1,5 @@
 package jeu;
 
-import cartes.Borne;
 import cartes.Carte;
 
 public class Joueur {
@@ -23,7 +22,7 @@ public class Joueur {
 
 	@Override
 	public String toString() {
-		return "Joueur [nom=" + nom + "]";
+		return nom;
 	}
 	
 	public void donner(Carte carte) {
