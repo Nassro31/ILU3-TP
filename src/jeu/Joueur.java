@@ -38,6 +38,10 @@ public class Joueur {
 		return carte;
 	}
 	
+	public void deposer(Carte c) {
+		zone.deposer(c);
+	}
+	
 	public int donnerKmParcourus() {
 		return zone.donnerKmParcourus();
 	}

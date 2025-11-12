@@ -87,9 +87,8 @@ public class ZoneDeJeu {
 	private boolean estDepotBatailleAutorise(Bataille bataille) {
 	    
 	    if (bataille instanceof Attaque) {
-	        //TODO fairea evc meth peutAvancer
 	        if (this.batailles.isEmpty()) {
-	            return true; //verifier avec la prof pk ca serait false voir test 1 
+	            return true; 
 	        }
 	        
 	        Bataille sommet = this.batailles.get(0);
