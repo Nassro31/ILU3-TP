@@ -4,12 +4,11 @@ import cartes.Carte;
 
 public class Joueur {
 	private String nom;
-	private ZoneDeJeu zone;
+	private ZoneDeJeu zone = new ZoneDeJeu();
 	private MainJoueur mainJoueur = new MainJoueur(); 
 	
-	public Joueur(String nom, ZoneDeJeu zone) {
+	public Joueur(String nom) {
 		this.nom = nom;
-		this.zone = zone;
 	} 
 	
 	@Override
@@ -38,8 +37,8 @@ public class Joueur {
 		return carte;
 	}
 	
-	public void deposer(Carte c) {
-		zone.deposer(c);
+	public void deposer(Carte carte) {
+		zone.deposer(carte);
 	}
 	
 	public int donnerKmParcourus() {

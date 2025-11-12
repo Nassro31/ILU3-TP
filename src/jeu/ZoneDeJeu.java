@@ -33,14 +33,14 @@ public class ZoneDeJeu {
 		return somme;
 	}
 
-	public void deposer(Carte c) {
-		if (c instanceof Borne borne) {
+	public void deposer(Carte carte) {
+		if (carte instanceof Borne borne) {
 			bornes.add(borne);
 		}
-		if (c instanceof Limite limite) {
+		if (carte instanceof Limite limite) {
 			limites.add(0, limite);
 		}
-		if (c instanceof Bataille bataille) {
+		if (carte instanceof Bataille bataille) {
 			batailles.add(0, bataille);
 		}
 	}
@@ -87,12 +87,7 @@ public class ZoneDeJeu {
 	private boolean estDepotBatailleAutorise(Bataille bataille) {
 	    
 	    if (bataille instanceof Attaque) {
-	        if (this.batailles.isEmpty()) {
-	            return true; 
-	        }
-	        
-	        Bataille sommet = this.batailles.get(0);
-	        return sommet instanceof Parade;
+	    	return peutAvancer();
 	    }
 	    
 	    if (bataille instanceof Parade) {

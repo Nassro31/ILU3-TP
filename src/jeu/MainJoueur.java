@@ -1,13 +1,14 @@
 package jeu;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import cartes.Carte;
 
-public class MainJoueur {
-	private List<Carte> main =  new ArrayList<>();
+public class MainJoueur implements Iterable<Carte>{
+	//TODO class ListIt
+	private List<Carte> main =  new LinkedList<>();
  
 
 	public void prendre(Carte carte) {
@@ -27,6 +28,11 @@ public class MainJoueur {
 			chaine +=  carte.toString(); 
 		}
 		return chaine; 
+	}
+
+	@Override
+	public Iterator<Carte> iterator() {
+		return main.iterator();
 	}
 	
 	
